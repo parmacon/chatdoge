@@ -22,14 +22,14 @@ async function sendMessage() {
 
     //사용자의 메시지 가져옴
     const messageInput = document.getElementById('messageInput');
-    const message = messageInput.value;  
+    const message = messageInput.value;
 
     //채팅 말풍선에 사용자의 메시지 출력
     const userBubble = document.createElement('div');
     userBubble.className = 'chat-bubble user-bubble';
     userBubble.textContent = message;
     document.getElementById('fortuneResponse').appendChild(userBubble);
-    
+
     //Push
     userMessages.push(messageInput.value);
 
@@ -38,7 +38,7 @@ async function sendMessage() {
 
     //백엔드 서버에 메시지를 보내고 응답 출력
     try {
-        const response = await fetch('http://localhost:3000/fortuneTell', {
+        const response = await fetch('{AWS Lambda 함수 URL}/fortuneTell', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -55,10 +55,10 @@ async function sendMessage() {
         }
 
         const data = await response.json();
-        
+
         //로딩 아이콘 숨기기
         document.getElementById('loader').style.display = "none";
-        
+
         //Push
         assistantMessages.push(data.assistant);
         console.log('Response:', data);
@@ -67,9 +67,19 @@ async function sendMessage() {
         const botBubble = document.createElement('div');
         botBubble.className = 'chat-bubble bot-bubble';
         botBubble.textContent = data.assistant;
+
+        //후원 링크 삽입
+        const p = document.createElement('p');
+        p.innerHTML = '추가로 링크를 눌러 작은 정성 베풀어 주시면 더욱 좋은 운이 있으실 겁니다. => ';
+        const link = document.createElement('a');
+        link.href = '{여러분의 토스 아이디 URL}';
+        link.innerHTML = '복채 보내기'
+        p.appendChild(link);
+        botBubble.appendChild(p);
+
         document.getElementById('fortuneResponse').appendChild(botBubble);
-        
-    
+
+
     } catch (error) {
         console.error('Error:', error);
     }
